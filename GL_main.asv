@@ -15,10 +15,8 @@ load data.mat;
 % end
 % figure,plot(data);
 chos=[1,2,4,6:12,14:26];
-% data_train0=data(1:40000,chos);
-% data_test0=data(40001:end,chos);
-data_train0=data(1:20000,chos);
-data_test0=data(20001:40000,chos);
+data_train0=data(1:40000,chos);
+data_test0=data(40001:end,chos);
 
 %% 对输入量归一化
 M_train=mean(data_train0);
@@ -56,10 +54,8 @@ data_test1=guiyihua(data_test0,M_train,S_train);%测试集
 %% dbm
 m=5;
 x=generate_batches(data_train1,100);
-y=generate_batches(data_test1,100);
-num=[50 25 5];
-[vishid0,hidbiases0,visbiases0]=dbm_initial(x,num);
-[vishid,hidbiases,visbiases]=dbm_BP(x,y,num,vishid0,hidbiases0,visbiases0);
-% [P,te]=dbm(x);%训练模型
-% y=data_test1';%测试集
-% [T2,SPE]=pca_indicater(y,P,te,m);
+Dim=[]
+
+[P,te]=dbm(x);%训练模型
+y=data_test1';%测试集
+[T2,SPE]=pca_indicater(y,P,te,m);
