@@ -14,16 +14,19 @@ load data.mat;
 %     figure,plot(data(:,i1));title(num2str(i1));
 % end
 % figure,plot(data);
-chos=[1,2,4,6:12,14:26];
+chos=[1:26];
+% chos=[1,2,4,6:12,14:26];
 % data_train0=data(1:40000,chos);
 % data_test0=data(40001:end,chos);
-data_train0=data(1:20000,chos);
-data_test0=data(20001:40000,chos);
-
+name_str=name_str(chos);
+data_train0=data(1:30000,chos);
+data_validation0=data(30001:40000,chos);
+data_test0=data(40001:90000,chos);
 %% 对输入量归一化
 M_train=mean(data_train0);
 S_train=std(data_train0);
 data_train1=guiyihua(data_train0,M_train,S_train);%训练集
+data_validation1=guiyihua(data_validation0,M_train,S_train);%验证集
 data_test1=guiyihua(data_test0,M_train,S_train);%测试集
 %% 
 % figure,plot(1:size(date,1),datenum(date)); %采样时间分布不均匀，周期一个小时
@@ -56,10 +59,25 @@ data_test1=guiyihua(data_test0,M_train,S_train);%测试集
 %% dbm
 m=5;
 x=generate_batches(data_train1,100);
-y=generate_batches(data_test1,100);
-num=[50 25 5];
-[vishid0,hidbiases0,visbiases0]=dbm_initial(x,num);
-[vishid,hidbiases,visbiases]=dbm_BP(x,y,num,vishid0,hidbiases0,visbiases0);
-% [P,te]=dbm(x);%训练模型
-% y=data_test1';%测试集
-% [T2,SPE]=pca_indicater(y,P,te,m);
+y=generate_batches(data_validation1,100);
+num=[100 50 25 10];
+[vishid,hidbiases,visbiases]=dbm_initial(x,num);
+Weight=dbm_BP(x,y,num,vishid,hidbiases,visbiases);
+% 重构
+[data_train2,data_train2_error]=dbm_reconstruction(data_train1,Weight);
+[data_validation2,data_validation2_error]=dbm_reconstruction(data_validation1,Weight);
+[data_test2,data_test2_error]=dbm_reconstruction(data_test1,Weight);
+% figure,plot(z_error);
+data_train3=iguiyihua(data_train2,M_train,S_train);%训练集
+data_validation3=iguiyihua(data_validation2,M_train,S_train);%验证集
+data_test3=iguiyihua(data_test2,M_train,S_train);%测试集
+
+data_show0=[data_train0;data_validation0];
+data_show1=[data_train1;data_validation1];
+data_show2=[data_train2;data_validation2];
+data_show3=[data_train3;data_validation3];
+for i1=1:size(data_show0,2)
+    figure,plot(1:length(data_show1),data_show1(:,i1),1:length(data_show2),data_show2(:,i1));
+    title(name_str{i1});
+    legend('原始信号','重构信号');
+end
