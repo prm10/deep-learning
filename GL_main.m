@@ -7,7 +7,7 @@ name_str={ '富氧率','透气性指数','CO','H2','CO2','标准风速','富氧流量','冷风流量
 
 % datestr(date(45506),'yyyy-mm-dd HH:MM:SS')
 
-load data.mat;
+load data_炉凉_2013-02-28.mat;
 % data=data(1:1000,:);
 % data=data(80000:90000,:);
 % for i1=1:size(data,2)
@@ -19,12 +19,13 @@ chos=[1:26];
 % data_train0=data(1:40000,chos);
 % data_test0=data(40001:end,chos);
 name_str=name_str(chos);
-data_train0=data(1:30000,chos);
-data_validation0=data(30001:40000,chos);
-data_test0=data(40001:90000,chos);
+data_train0=data0(1:30000,chos);
+data_validation0=data0(30001:40000,chos);
+data_test0=data0(40001:90000,chos);
 %% 对输入量归一化
 M_train=mean(data_train0);
 S_train=std(data_train0);
+S_train=S_train*6;
 data_train1=guiyihua(data_train0,M_train,S_train);%训练集
 data_validation1=guiyihua(data_validation0,M_train,S_train);%验证集
 data_test1=guiyihua(data_test0,M_train,S_train);%测试集
@@ -60,7 +61,7 @@ data_test1=guiyihua(data_test0,M_train,S_train);%测试集
 m=5;
 x=generate_batches(data_train1,100);
 y=generate_batches(data_validation1,100);
-num=[100 50 25 10];
+num=[50 25 10];
 [vishid,hidbiases,visbiases]=dbm_initial(x,num);
 Weight=dbm_BP(x,y,num,vishid,hidbiases,visbiases);
 % 重构
