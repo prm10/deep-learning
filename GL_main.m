@@ -57,6 +57,19 @@ data_test1=.5+guiyihua(data_test0,M_train,S_train);%测试集
 % plot(T2);title('T2');
 % subplot(2,1,2);
 % plot(SPE);title('SPE');
+%% rbm
+x=generate_batches(data_train1,100);
+y=generate_batches(data_validation1,100);
+[batchposhidprobs,vishid,hidbiases,visbiases]=rbm_model(x,1000);
+
+a1=data_train1;
+z2=a1*vishid+repmat(hidbiases,size(a1,1),1);
+a2=1./(1+exp(-z2));
+z3=a2*vishid'+repmat(visbiases,size(a1,1),1);
+a3=1./(1+exp(-z3));
+
+i1=3;
+plot(1:size(data_train1,1),data_train1(:,i1),1:size(data_train1,1),a3(:,i1));
 %% dbm
 % x=generate_batches(data_train1,100);
 % y=generate_batches(data_validation1,100);
@@ -82,10 +95,10 @@ data_test1=.5+guiyihua(data_test0,M_train,S_train);%测试集
 %     legend('原始信号','重构信号');
 % end
 %% sparse autocoder
-x=generate_batches(data_train1,100);
-y=generate_batches(data_validation1,100);
-[hout,w1,w2,b1,b2]=sparse_autocoder(x,7,100);
-dataout=sparse_autocoder_reconstruction(data_train1,w1,w2,b1,b2);
-i1=2;
-figure;
-plot(1:size(data_train1,1),data_train1(:,i1),1:size(data_train1,1),dataout(:,i1));
+% x=generate_batches(data_train1,100);
+% y=generate_batches(data_validation1,100);
+% [hout,w1,w2,b1,b2]=sparse_autocoder(x,7,100);
+% dataout=sparse_autocoder_reconstruction(data_train1,w1,w2,b1,b2);
+% i1=2;
+% figure;
+% plot(1:size(data_train1,1),data_train1(:,i1),1:size(data_train1,1),dataout(:,i1));

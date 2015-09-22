@@ -1,7 +1,7 @@
 function [hout,w1,w2,b1,b2]=sparse_autocoder(batchdata,numhid,maxepoch)
-epsilonw      = 0.001;   % Learning rate for weights 
-epsilonvb     = 0.001;   % Learning rate for biases of visible units 
-epsilonhb     = 0.001;   % Learning rate for biases of hidden units    
+epsilonw      = 0.01;   % Learning rate for weights 
+epsilonvb     = 0.01;   % Learning rate for biases of visible units 
+epsilonhb     = 0.01;   % Learning rate for biases of hidden units    
 initialmomentum  = 0.5;
 finalmomentum    = 0.9;
 

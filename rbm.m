@@ -54,7 +54,7 @@ for epoch = epoch:maxepoch,
  fprintf(1,'epoch %d\r',epoch); 
  errsum=0;
  for batch = 1:numbatches,
- fprintf(1,'epoch %d batch %d\r',epoch,batch); 
+%  fprintf(1,'epoch %d batch %d\r',epoch,batch); 
 
 %%%%%%%%% START POSITIVE PHASE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   data = batchdata(:,:,batch);

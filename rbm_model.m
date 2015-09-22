@@ -1,7 +1,7 @@
-function [batchposhidprobs,vishid,hidbiases,visbiases]=rbm_model(batchdata,numhid,maxepoch)
-epsilonw      = 0.0003;   % Learning rate for weights 
-epsilonvb     = 0.001;   % Learning rate for biases of visible units 
-epsilonhb     = 0.001;   % Learning rate for biases of hidden units 
+function [batchposhidprobs,vishid,hidbiases,visbiases]=rbm_model(batchdata,numhid)
+epsilonw      = 0.1;   % Learning rate for weights 
+epsilonvb     = 0.1;   % Learning rate for biases of visible units 
+epsilonhb     = 0.1;   % Learning rate for biases of hidden units 
 weightcost  = 0.0002;   
 initialmomentum  = 0.5;
 finalmomentum    = 0.9;
@@ -10,6 +10,7 @@ finalmomentum    = 0.9;
 
 % restart=0;
 epoch=1;
+maxepoch=10;
 
 % Initializing symmetric weights and biases. 
 vishid     = 0.1*randn(numdims, numhid);
