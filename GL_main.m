@@ -25,10 +25,10 @@ data_test0=data0(40001:90000,chos);
 %% 对输入量归一化
 M_train=mean(data_train0);
 S_train=std(data_train0);
-S_train=S_train*6;
-data_train1=guiyihua(data_train0,M_train,S_train);%训练集
-data_validation1=guiyihua(data_validation0,M_train,S_train);%验证集
-data_test1=guiyihua(data_test0,M_train,S_train);%测试集
+S_train=S_train*5;
+data_train1=.5+guiyihua(data_train0,M_train,S_train);%训练集
+data_validation1=.5+guiyihua(data_validation0,M_train,S_train);%验证集
+data_test1=.5+guiyihua(data_test0,M_train,S_train);%测试集
 %% 
 % figure,plot(1:size(date,1),datenum(date)); %采样时间分布不均匀，周期一个小时
 %% sfa
@@ -58,27 +58,34 @@ data_test1=guiyihua(data_test0,M_train,S_train);%测试集
 % subplot(2,1,2);
 % plot(SPE);title('SPE');
 %% dbm
-m=5;
+% x=generate_batches(data_train1,100);
+% y=generate_batches(data_validation1,100);
+% num=[50 25 10];
+% [vishid,hidbiases,visbiases]=dbm_initial(x,num);
+% Weight=dbm_BP(x,y,num,vishid,hidbiases,visbiases);
+% % 重构
+% [data_train2,data_train2_error]=dbm_reconstruction(data_train1,Weight);
+% [data_validation2,data_validation2_error]=dbm_reconstruction(data_validation1,Weight);
+% [data_test2,data_test2_error]=dbm_reconstruction(data_test1,Weight);
+% % figure,plot(z_error);
+% data_train3=iguiyihua(data_train2,M_train,S_train);%训练集
+% data_validation3=iguiyihua(data_validation2,M_train,S_train);%验证集
+% data_test3=iguiyihua(data_test2,M_train,S_train);%测试集
+% 
+% data_show0=[data_train0;data_validation0];
+% data_show1=[data_train1;data_validation1];
+% data_show2=[data_train2;data_validation2];
+% data_show3=[data_train3;data_validation3];
+% for i1=1:size(data_show0,2)
+%     figure,plot(1:length(data_show1),data_show1(:,i1),1:length(data_show2),data_show2(:,i1));
+%     title(name_str{i1});
+%     legend('原始信号','重构信号');
+% end
+%% sparse autocoder
 x=generate_batches(data_train1,100);
 y=generate_batches(data_validation1,100);
-num=[50 25 10];
-[vishid,hidbiases,visbiases]=dbm_initial(x,num);
-Weight=dbm_BP(x,y,num,vishid,hidbiases,visbiases);
-% 重构
-[data_train2,data_train2_error]=dbm_reconstruction(data_train1,Weight);
-[data_validation2,data_validation2_error]=dbm_reconstruction(data_validation1,Weight);
-[data_test2,data_test2_error]=dbm_reconstruction(data_test1,Weight);
-% figure,plot(z_error);
-data_train3=iguiyihua(data_train2,M_train,S_train);%训练集
-data_validation3=iguiyihua(data_validation2,M_train,S_train);%验证集
-data_test3=iguiyihua(data_test2,M_train,S_train);%测试集
-
-data_show0=[data_train0;data_validation0];
-data_show1=[data_train1;data_validation1];
-data_show2=[data_train2;data_validation2];
-data_show3=[data_train3;data_validation3];
-for i1=1:size(data_show0,2)
-    figure,plot(1:length(data_show1),data_show1(:,i1),1:length(data_show2),data_show2(:,i1));
-    title(name_str{i1});
-    legend('原始信号','重构信号');
-end
+[hout,w1,w2,b1,b2]=sparse_autocoder(x,7,100);
+dataout=sparse_autocoder_reconstruction(data_train1,w1,w2,b1,b2);
+i1=2;
+figure;
+plot(1:size(data_train1,1),data_train1(:,i1),1:size(data_train1,1),dataout(:,i1));
