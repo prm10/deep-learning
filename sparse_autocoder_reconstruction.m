@@ -1,4 +1,4 @@
-function a3=sparse_autocoder_reconstruction(data_train1,w1,w2,b1,b2)
+function [a3,a2]=sparse_autocoder_reconstruction(data_train1,w1,w2,b1,b2)
 a1 = data_train1;
 numcases=size(data_train1,1);
 z1=a1*w1 + repmat(b1,numcases,1);

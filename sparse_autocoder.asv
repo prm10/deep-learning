@@ -7,7 +7,7 @@ finalmomentum    = 0.9;
 
 row=0.5;%¼¤»î¶È
 belta=0.01;
-lambda=0.0001;
+lambda=0.001;
 
 [numcases, numdims, numbatches]=size(batchdata);
 % Initializing symmetric weights and biases. 
@@ -41,8 +41,8 @@ for epoch = 1:maxepoch,
         
         db1=mean(delta2);
         db2=mean(delta3);
-        dw1=a1'*delta2/numcases+lambda*w1;
-        dw2=a2'*delta3/numcases+lambda*w2;
+        dw1=a1'*delta2/numcases;
+        dw2=a2'*delta3/numcases;
 
 %%%%%%%%% END OF NEGATIVE PHASE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         err= sum(sum( (a1-a3).^2 ));
@@ -55,8 +55,8 @@ for epoch = 1:maxepoch,
         end;
 
 %%%%%%%%% UPDATE WEIGHTS AND BIASES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-        Dw1 = momentum*Dw1 - epsilonw*dw1;
-        Dw2 = momentum*Dw2 - epsilonw*dw2;
+        Dw1 = momentum*Dw1 - epsilonw*dw1-lambda*w1;
+        Dw2 = momentum*Dw2 - epsilonw*dw2-lambda*w2;
         Db1 = momentum*Db1 - epsilonhb*db1;
         Db2 = momentum*Db2 - epsilonvb*db2;
         

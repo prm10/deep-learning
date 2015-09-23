@@ -1,10 +1,12 @@
 clc;clear all;close all;
-data_train0=eye(4);
-data_train1=repmat(data_train0,6000,1);
+n=4;
+data_train0=eye(2^n);
+data_train1=repmat(data_train0,10000,1);
 x=generate_batches(data_train1,100);
-[hout,w1,w2,b1,b2]=sparse_autocoder(x,2,100);
-dataout=sparse_autocoder_reconstruction(data_train0,w1,w2,b1,b2);
+[~,w1,w2,b1,b2]=sparse_autocoder(x,n,200);
+[dataout,a2]=sparse_autocoder_reconstruction(data_train0,w1,w2,b1,b2);
 imshow([data_train0 dataout]);
+info=length(unique((a2>.5)*2.^(n-1:-1:0)'));
 % figure;
 % visualize(w1)
 %% dbm

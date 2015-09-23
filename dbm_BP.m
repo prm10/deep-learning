@@ -1,6 +1,6 @@
 function [Weight]=dbm_BP(x,y,num,vishid,hidbiases,visbiases)
 %% initial
-maxepoch=10;
+maxepoch=0;
 fprintf(1,'\nFine-tuning deep autoencoder by minimizing cross entropy error. \n');
 fprintf(1,'60 batches of 1000 cases each. \n');
 batchdata=x;

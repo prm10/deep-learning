@@ -16,12 +16,31 @@ clc;clear all;close all;
 % imshow([reshape(a1,[28 28])' reshape(a3,[28 28])']);
 
 %% eye(4)
-x=generate_batches(repmat(eye(4),600,1),100);
-[batchposhidprobs,vishid,hidbiases,visbiases]=rbm_model(x,2);
-a1=eye(4);
-z2=a1*vishid+repmat(hidbiases,4,1);
-a2=1./(1+exp(-z2));
-z3=a2*vishid'+repmat(visbiases,4,1);
-a3=1./(1+exp(-z3))
+% n=3;
+% x=generate_batches(repmat(eye(2^n),10000,1),100);
+% [batchposhidprobs,vishid,hidbiases,visbiases]=rbm_model(x,n);
+% a1=eye(2^n);
+% z2=a1*vishid+repmat(hidbiases,size(a1,1),1);
+% a2=1./(1+exp(-z2));
+% z3=a2*vishid'+repmat(visbiases,size(a1,1),1);
+% a3=1./(1+exp(-z3));
+% a4=(a2>.5);
+% a5=sort(a4*2.^(n-1:-1:0)')'
+%% eye(4)+dbm
+n=3;
+x=generate_batches(repmat(eye(2^n),10000,1),100);
+y=eye(2^n);
+num=[50 25 10 n];
+% num=n;
+[vishid,hidbiases,visbiases]=dbm_initial(x,num);
+Weight=dbm_BP(x,y,num,vishid,hidbiases,visbiases);
+% ÖØ¹¹
+[a3,error]=dbm_reconstruction(eye(2^n),Weight);
 
-
+% a1=eye(2^n);
+% z2=a1*vishid+repmat(hidbiases,size(a1,1),1);
+% a2=1./(1+exp(-z2));
+% z3=a2*vishid'+repmat(visbiases,size(a1,1),1);
+% a3=1./(1+exp(-z3));
+% a4=(a2>.5);
+% a5=sort(a4*2.^(n-1:-1:0)')'
