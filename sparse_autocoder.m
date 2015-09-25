@@ -1,13 +1,13 @@
-function [hout,w1,w2,b1,b2]=sparse_autocoder(batchdata,numhid,maxepoch)
+function [hout,w1,w2,b1,b2]=sparse_autocoder(batchdata,numhid,row,maxepoch)
 epsilonw      = 0.01;   % Learning rate for weights 
 epsilonvb     = 0.01;   % Learning rate for biases of visible units 
 epsilonhb     = 0.01;   % Learning rate for biases of hidden units    
 initialmomentum  = 0.5;
 finalmomentum    = 0.9;
 
-row=0.5;%激活度
-belta=0.01;
-lambda=0.0001;
+% row=0.5;%激活度
+belta=0.02;
+lambda=0.00001;
 
 [numcases, numdims, numbatches]=size(batchdata);
 % Initializing symmetric weights and biases. 

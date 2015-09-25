@@ -21,21 +21,21 @@ chos=[1:26];
 % data_test0=data(40001:end,chos);
 name_str=name_str(chos);
 %% 计算变量所在区间
-i2=1;
-std2=std(data0(:,chos));
-median2=median(data0(:,chos));
-for i1=10000:10000:400000
-    d1=data0(1:i1,chos);
-    std1=std(d1);
-    median1=median(d1);
-    compare_std(i2,:)=std1./std2;
-    compare_median(i2,:)=abs(median1-median2)./std2;
-    i2=i2+1
-end
-figure;
-plot(compare_std);title('std');
-figure;
-plot(compare_median);title('median');
+% i2=1;
+% std2=std(data0(:,chos));
+% median2=median(data0(:,chos));
+% for i1=10000:10000:400000
+%     d1=data0(1:i1,chos);
+%     std1=std(d1);
+%     median1=median(d1);
+%     compare_std(i2,:)=std1./std2;
+%     compare_median(i2,:)=abs(median1-median2)./std2;
+%     i2=i2+1
+% end
+% figure;
+% plot(compare_std);title('std');
+% figure;
+% plot(compare_median);title('median');
 
 %% 训练集、验证集、测试集
 data_train0=data0(1:30000,chos);
