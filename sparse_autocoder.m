@@ -1,4 +1,4 @@
-function [hout,w1,w2,b1,b2]=sparse_autocoder(batchdata,numhid,row,maxepoch)
+function [hout,w1,w2,b1,b2,rec_error]=sparse_autocoder(batchdata,numhid,row,maxepoch)
 epsilonw      = 0.01;   % Learning rate for weights 
 epsilonvb     = 0.01;   % Learning rate for biases of visible units 
 epsilonhb     = 0.01;   % Learning rate for biases of hidden units    
@@ -6,7 +6,7 @@ initialmomentum  = 0.5;
 finalmomentum    = 0.9;
 
 % row=0.5;%¼¤»î¶È
-belta=0.02;
+belta=0.002;
 lambda=0.00001;
 
 [numcases, numdims, numbatches]=size(batchdata);
@@ -21,6 +21,7 @@ Dw2  = zeros(numhid,numdims);
 Db1 = zeros(1,numhid);
 Db2 = zeros(1,numdims);
 hout=zeros(numcases,numhid,numbatches);
+rec_error=zeros(maxepoch,1);
 for epoch = 1:maxepoch,
     errsum=0;
     ar=0;
@@ -72,6 +73,8 @@ for epoch = 1:maxepoch,
 %%%%%%%%%%%%%%%% END OF UPDATES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
     end
-    fprintf(1, 'epoch %4i error %6.1f active rate %3.3f \n', epoch, errsum, ar/numbatches); 
+    errsum=errsum/numcases/numdims/numbatches;
+    rec_error(epoch)=errsum*1e3;
+    fprintf(1, 'epoch %4i error %.4f active rate %3.3f \n', epoch, rec_error(epoch), ar/numbatches); 
 end;
 end

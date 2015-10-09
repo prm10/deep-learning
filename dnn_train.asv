@@ -10,5 +10,4 @@ for n=layer
     [x,w1{i1},w2{i1},b1{i1},b2{i1},e{i1}]=sparse_autocoder(x,n,active_rate(i1),circle_times);
     i1=i1+1;
 end
-toc;
 

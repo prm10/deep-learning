@@ -11,7 +11,7 @@ x=generate_batches(data_train1,100);
 layer=[2^n n];
 active_rate=[0.1 0.5];
 circle_times=100;
-[w1,w2,b1,b2]=dnn_train(x,layer,active_rate,circle_times);
+[w1,w2,b1,b2]=dnn_train(x,layer,active_rate,100);
 [dataout,median_out]=dnn_test(data_train0,w1,w2,b1,b2);
 %% result visualize
 imshow([data_train0 dataout]);
