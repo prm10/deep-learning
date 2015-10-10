@@ -1,4 +1,4 @@
-function [f, df] = CG_GL(VV,Dim,XX)
+function [f, df] = dnn_CG(VV,Dim,XX)
 N = size(XX,1);
 Weight=cell(0);
 xxx=0;
@@ -11,11 +11,7 @@ XX = [XX ones(N,1)];
 wprobs=cell(0);
 wprobs{1}=XX;
 for i1=1:length(Weight)
-    if i1==length(Weight)/2
-        wprobs{i1+1} = wprobs{i1}*Weight{i1};
-    else
-        wprobs{i1+1} = 1./(1 + exp(-wprobs{i1}*Weight{i1})); 
-    end
+    wprobs{i1+1} = 1./(1 + exp(-wprobs{i1}*Weight{i1}));
     wprobs{i1+1} = [wprobs{i1+1}  ones(N,1)];
 end
 Xout=wprobs{length(Dim)};

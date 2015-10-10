@@ -24,7 +24,7 @@ name_str=name_str(chos);
 
 %% 训练集、验证集、测试集
 data_train0=data0(1:20000,chos);
-data_validation0=data0(1:500000,chos);
+data_validation0=data0(1:200000,chos);
 data_test0=data0(500001:700000,chos);
 %% 对输入量归一化
 M_train=mean(data_train0);
@@ -123,9 +123,9 @@ data_test2=(data_test2-ones(size(data_test2,1),1)*min2)...
 %可以分别试试用原始信号和用pca处理后信号的效果
 x=generate_batches(data_validation2,100);
 y=generate_batches(data_test2,100);
-layer=[100 50 20 7];
-active_rate=[0.2 0.3 0.4 0.5];
-circle_times=10;
+layer=[10 5];
+active_rate=[0.4 0.5];
+circle_times=[100 200];
 [w1,w2,b1,b2,e]=dnn_train(x,layer,active_rate,circle_times);
 save(strcat('para',num2str(layer),'.mat'),'M_train','S_train','min2','max2','w1','w2','b1','b2');
 % 查看验证集和测试的重构效果
