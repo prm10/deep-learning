@@ -25,6 +25,11 @@ rec_error=zeros(maxepoch,1);
 for epoch = 1:maxepoch,
     errsum=0;
     ar=0;
+    if epoch>5,
+        momentum=finalmomentum;
+    else
+        momentum=initialmomentum;
+    end;
     for batch = 1:numbatches,
 %% Ç°Ïò´«²¥
         a1 = batchdata(:,:,batch);
@@ -49,22 +54,11 @@ for epoch = 1:maxepoch,
         err= sum(sum( (a1-a3).^2 ));
         errsum = err + errsum;
 
-        if epoch>5,
-            momentum=finalmomentum;
-        else
-            momentum=initialmomentum;
-        end;
-
 %%%%%%%%% UPDATE WEIGHTS AND BIASES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
         Dw1 = momentum*Dw1 - epsilonw*dw1;
         Dw2 = momentum*Dw2 - epsilonw*dw2;
         Db1 = momentum*Db1 - epsilonhb*db1;
         Db2 = momentum*Db2 - epsilonvb*db2;
-        
-%         Dw1 = - epsilonw*dw1;
-%         Dw2 = - epsilonw*dw2;
-%         Db1 = - epsilonhb*db1;
-%         Db2 = - epsilonvb*db2;
 
         w1 = w1 + Dw1;
         w2 = w2 + Dw2;
