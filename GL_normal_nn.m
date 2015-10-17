@@ -1,7 +1,5 @@
 clc;clear all;close all;
 name_str={ '富氧率','透气性指数','CO','H2','CO2','标准风速','富氧流量','冷风流量','鼓风动能','炉腹煤气量','炉腹煤气指数','理论燃烧温度','顶压','顶压2','顶压3','富氧压力','冷风压力','全压差','热风压力','实际风速','热风温度','顶温东北','顶温西南','顶温西北','顶温东南','阻力系数','鼓风湿度','设定喷煤量','本小时实际喷煤量','上小时实际喷煤量'};
-% datestr(date(45506),'yyyy-mm-dd HH:MM:SS')
-
 load data_正常_2012-10-01.mat;
 chos=[1:26];
 name_str=name_str(chos);
@@ -24,14 +22,19 @@ name_str=name_str(chos);
 
 %% 训练集、验证集、测试集
 data_train0=data0(1:20000,chos);
-data_validation0=data0(1:200000,chos);
-data_test0=data0(500001:700000,chos);
+data_validation0=data0(1:20000,chos);
+data_test0=data0(610001:630000,chos);
 %% 对输入量归一化
 M_train=mean(data_train0);
 S_train=std(data_train0);
 data_train1=guiyihua(data_train0,M_train,S_train);%训练集
 data_validation1=guiyihua(data_validation0,M_train,S_train);%验证集
 data_test1=guiyihua(data_test0,M_train,S_train);%测试集
+
+% for i1=1:26
+%     figure,hist(data_test1(:,i1),20);
+%     title(name_str{i1});
+% end
 
 clear data0 data_train0 data_validation0 data_test0;
 %% 剔除超限数据
