@@ -22,7 +22,7 @@ range1=(max(abs(data_train1'))<5)';
 range2=(max(abs(data_test1'))<5)';
 
 data_train2=generate_img(data_train1,range1,720,180);%每张图片涉及2个小时的数据，步长半个小时
-data_test2=generate_img(data_test1,range2,720,180);
+
 
 
 train_x = double(reshape(train_x',28,28,60000))/255;
@@ -38,8 +38,8 @@ rand('state',0)
 
 cnn.layers = {
     struct('type', 'i') %input layer
-    struct('type', 'c', 'outputmaps', 6, 'kernelsize', 26) %convolution layer
-    struct('type', 's', 'scale', 10) %sub sampling layer
+    struct('type', 'c', 'outputmaps', 6, 'kernelsize', 5) %convolution layer
+    struct('type', 's', 'scale', 2) %sub sampling layer
     struct('type', 'c', 'outputmaps', 12, 'kernelsize', 5) %convolution layer
     struct('type', 's', 'scale', 2) %subsampling layer
 };
