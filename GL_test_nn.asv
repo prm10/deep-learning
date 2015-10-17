@@ -1,9 +1,8 @@
 clc;clear all;close all;
 name_str={ '富氧率','透气性指数','CO','H2','CO2','标准风速','富氧流量','冷风流量','鼓风动能','炉腹煤气量','炉腹煤气指数','理论燃烧温度','顶压','顶压2','顶压3','富氧压力','冷风压力','全压差','热风压力','实际风速','热风温度','顶温东北','顶温西南','顶温西北','顶温东南','阻力系数','鼓风湿度','设定喷煤量','本小时实际喷煤量','上小时实际喷煤量'};
-load data_悬料_2012-03-24.mat;
+load data_管道_2012-11-16.mat;
 chos=[1:26];
 name_str=name_str(chos);
-%  datestr(date0(60000),'yyyy-mm-dd HH:MM:SS')
 %% 代入模型
 load('para20  10   5.mat');
 data1=guiyihua(data0(:,chos),M_train,S_train);
@@ -28,15 +27,16 @@ dataout1=dataout2.*(ones(size(dataout2,1),1)*(max2-min2))+ones(size(dataout2,1),
 % end
 %% median out feature analysis
 
+% hold on;
 n=1000:size(median_out,1);
 for i1=1:size(median_out,2)
     figure;
     plot(n,median_out(n,i1));
 end
+% hold off;
+% legend('1','2','3','4','5');
 
 
-% close all;
-% for i1=1:26
-%     figure,plot(data0(1:20000,i1));
-%     title(name_str{i1});
-% end
+for i1=1:26
+    figure,plot(data0(1:20000,i1));
+end

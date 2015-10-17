@@ -6,19 +6,24 @@ name_str=name_str(chos);
 
 %% 训练集、验证集、测试集
 data_train0=data0(1:20000,chos);
-data_validation0=data0(1:20000,chos);
 data_test0=data0(610001:630000,chos);
 %% 对输入量归一化
 M_train=mean(data0(:,chos));
 S_train=std(data0(:,chos));
 data_train1=guiyihua(data_train0,M_train,S_train);%训练集
-data_validation1=guiyihua(data_validation0,M_train,S_train);%验证集
 data_test1=guiyihua(data_test0,M_train,S_train);%测试集
 
 % for i1=1:26
 %     figure,hist(data_train1(:,i1),20);
 %     title(name_str{i1});
 % end
+%% 剔除超限数据
+range1=(max(abs(data_train1'))<5)';
+range2=(max(abs(data_test1'))<5)';
+
+data_train2=generate_img(data_train1,range1);
+
+
 
 train_x = double(reshape(train_x',28,28,60000))/255;
 test_x = double(reshape(test_x',28,28,10000))/255;
