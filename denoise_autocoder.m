@@ -1,13 +1,13 @@
-function [hout,w1,b1,b2,rec_error]=sparse_autocoder(batchdata,numhid,maxepoch)
+function [hout,w1,b1,b2,rec_error]=denoise_autocoder(batchdata,numhid,maxepoch)
 epsilonw      = 0.01;   % Learning rate for weights 
 epsilonvb     = 0.01;   % Learning rate for biases of visible units 
 epsilonhb     = 0.01;   % Learning rate for biases of hidden units    
 initialmomentum  = 0.5;
 finalmomentum    = 0.9;
 
-row=0.5;%激活度
-belta=0.002;
-lambda=0.00001;
+% row=0.5;%激活度
+% belta=0.002;
+lambda=0.0000;
 
 [numcases, numdims, numbatches]=size(batchdata);
 % Initializing symmetric weights and biases. 
@@ -23,6 +23,7 @@ Db1 = zeros(1,numhid);
 Db2 = zeros(1,numdims);
 hout=zeros(numcases,numhid,numbatches);
 rec_error=zeros(maxepoch,1);
+std1=sqrt(sum(permute(std(batchdata),[3,2,1]).^2)/numcases);
 for epoch = 1:maxepoch,
     errsum=0;
     ar=0;
@@ -33,7 +34,10 @@ for epoch = 1:maxepoch,
     end;
     for batch = 1:numbatches,
 %% 前向传播
-        a1 = batchdata(:,:,batch);
+        data = batchdata(:,:,batch);
+        % add noise
+%         std1=std(a1);
+        a1=data+(ones(numcases,1)*std1).*wgn(numcases,numdims,-30);%加入样本0.1倍标准差的高斯噪声
         z1=a1*w1 + repmat(b1,numcases,1);
         a2 = 1./(1 + exp(-z1));
         z2=a2*w2 + repmat(b2,numcases,1);
@@ -43,16 +47,16 @@ for epoch = 1:maxepoch,
         active_rate=mean(a2);
         ar=ar+mean(active_rate);
         
-        delta3=-(a1-a3).*a3.*(1-a3);
-        delta2=(delta3*w2'+belta*ones(numcases,1)*(-row./active_rate+(1-row)./(1-active_rate))).*a2.*(1-a2);
+        delta3=-(data-a3).*a3.*(1-a3);
+        delta2=(delta3*w2').*a2.*(1-a2);
         
         db1=mean(delta2);
         db2=mean(delta3);
-        dw1=a1'*delta2/numcases+lambda*w1;
+        dw1=data'*delta2/numcases+lambda*w1;
         dw2=a2'*delta3/numcases+lambda*w2;
 
 %%%%%%%%% END OF NEGATIVE PHASE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        err= sum(sum( (a1-a3).^2 ));
+        err= sum(sum( (data-a3).^2 ));
         errsum = err + errsum;
 
 %%%%%%%%% UPDATE WEIGHTS AND BIASES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 

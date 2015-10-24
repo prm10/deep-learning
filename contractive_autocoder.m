@@ -1,13 +1,13 @@
-function [hout,w1,b1,b2,rec_error]=sparse_autocoder(batchdata,numhid,maxepoch)
+function [hout,w1,b1,b2,rec_error]=contractive_autocoder(batchdata,numhid,maxepoch)
 epsilonw      = 0.01;   % Learning rate for weights 
 epsilonvb     = 0.01;   % Learning rate for biases of visible units 
 epsilonhb     = 0.01;   % Learning rate for biases of hidden units    
 initialmomentum  = 0.5;
 finalmomentum    = 0.9;
 
-row=0.5;%激活度
-belta=0.002;
-lambda=0.00001;
+% row=0.5;%激活度
+% belta=0.002;
+lambda=0.0001;
 
 [numcases, numdims, numbatches]=size(batchdata);
 % Initializing symmetric weights and biases. 
@@ -44,11 +44,15 @@ for epoch = 1:maxepoch,
         ar=ar+mean(active_rate);
         
         delta3=-(a1-a3).*a3.*(1-a3);
-        delta2=(delta3*w2'+belta*ones(numcases,1)*(-row./active_rate+(1-row)./(1-active_rate))).*a2.*(1-a2);
+        delta2=(delta3*w2').*a2.*(1-a2);
         
-        db1=mean(delta2);
+        g0=(a2.*(1-a2)).^2;
+        g1=mean((1-2*a2).*g0).*sum(w1.^2);
+        g2=(ones(numdims,numcases)*g0)/numcases.*w1+(a1'*((1-2*a2).*g0))/numcases.*(ones(numdims,1)*sum(w1.^2));
+        
+        db1=mean(delta2)+lambda*g1;
         db2=mean(delta3);
-        dw1=a1'*delta2/numcases+lambda*w1;
+        dw1=a1'*delta2/numcases+lambda*g2;
         dw2=a2'*delta3/numcases+lambda*w2;
 
 %%%%%%%%% END OF NEGATIVE PHASE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,8 +1,23 @@
 clc;clear all;close all;
 name_str={ '富氧率','透气性指数','CO','H2','CO2','标准风速','富氧流量','冷风流量','鼓风动能','炉腹煤气量','炉腹煤气指数','理论燃烧温度','顶压','顶压2','顶压3','富氧压力','冷风压力','全压差','热风压力','实际风速','热风温度','顶温东北','顶温西南','顶温西北','顶温东南','阻力系数','鼓风湿度','设定喷煤量','本小时实际喷煤量','上小时实际喷煤量'};
-load data_正常_2012-10-01.mat;
-chos=[1:26];
+chos=[2:5,11:15,22:26];
 name_str=name_str(chos);
+load data_正常_2012-10-01.mat;
+%% 导入数据
+n=8;
+l=zeros(1,n);
+temp=zeros(n,30);
+for i1=1:n
+    load(strcat('K:\GL_data\3\','data_',num2str(i1),'.mat'));
+    l(i1)=length(date0);
+    temp(i1,:)=mean(data0);
+end
+M=l*temp/sum(l);
+for i1=1:n
+    load(strcat('K:\GL_data\3\','data_',num2str(i1),'.mat'));
+    temp(i1,:)=mean((data0-ones(l(i1),1)*M).^2);
+end
+S=sqrt(l*temp/sum(l));
 %% 计算变量所在区间
 % i2=1;
 % std2=std(data0(:,chos));
@@ -85,43 +100,7 @@ data_test2=(data_test2-ones(size(data_test2,1),1)*min2)...
 % plot(T2);title('T2');
 % subplot(2,1,2);
 % plot(SPE);title('SPE');
-%% rbm
-% x=generate_batches(data_train1,100);
-% y=generate_batches(data_validation1,100);
-% [batchposhidprobs,vishid,hidbiases,visbiases]=rbm_model(x,1000);
-% 
-% a1=data_train1;
-% z2=a1*vishid+repmat(hidbiases,size(a1,1),1);
-% a2=1./(1+exp(-z2));
-% z3=a2*vishid'+repmat(visbiases,size(a1,1),1);
-% a3=1./(1+exp(-z3));
-% 
-% i1=3;
-% plot(1:size(data_train1,1),data_train1(:,i1),1:size(data_train1,1),a3(:,i1));
-%% dbm
-% x=generate_batches(data_train1,100);
-% y=generate_batches(data_validation1,100);
-% num=[50 25 10];
-% [vishid,hidbiases,visbiases]=dbm_initial(x,num);
-% Weight=dbm_BP(x,y,num,vishid,hidbiases,visbiases);
-% % 重构
-% [data_train2,data_train2_error]=dbm_reconstruction(data_train1,Weight);
-% [data_validation2,data_validation2_error]=dbm_reconstruction(data_validation1,Weight);
-% [data_test2,data_test2_error]=dbm_reconstruction(data_test1,Weight);
-% % figure,plot(z_error);
-% data_train3=iguiyihua(data_train2,M_train,S_train);%训练集
-% data_validation3=iguiyihua(data_validation2,M_train,S_train);%验证集
-% data_test3=iguiyihua(data_test2,M_train,S_train);%测试集
-% 
-% data_show0=[data_train0;data_validation0];
-% data_show1=[data_train1;data_validation1];
-% data_show2=[data_train2;data_validation2];
-% data_show3=[data_train3;data_validation3];
-% for i1=1:size(data_show0,2)
-%     figure,plot(1:length(data_show1),data_show1(:,i1),1:length(data_show2),data_show2(:,i1));
-%     title(name_str{i1});
-%     legend('原始信号','重构信号');
-% end
+
 %% sparse autocoder
 %可以分别试试用原始信号和用pca处理后信号的效果
 x=generate_batches(data_validation2,100);
