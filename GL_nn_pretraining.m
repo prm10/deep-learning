@@ -13,12 +13,13 @@ clear data2 date2 label2 kind
 layer=[100 20];
 circle_times=[100 100];
 [w1,b1]=dnn_train(x,y,layer,circle_times);
-save(strcat('para',num2str(layer),'.mat'),'w1','b1','b2');
+save(strcat('para',num2str(layer),'.mat'),'w1','b1');
 % 查看验证集和测试的重构效果
 clear x y;
 load('K:\GL_data\3\data2_labeled');
-[dataout]=dnn_test(x,w1,b1);
-
+[dataout]=dnn_test(data2,w1,b1);
+n=1:length(dataout);
+plot(n,label2,n,dataout);
 % dataout=dataout.*(ones(size(dataout,1),1)*(max2-min2))+ones(size(dataout,1),1)*min2;
 % T4=dataout*P1;
 % [dataout,~]=dnn_test(data_test2,w1,w2,b1,b2);
