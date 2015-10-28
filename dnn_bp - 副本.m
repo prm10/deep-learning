@@ -1,4 +1,4 @@
-function [w1,b1,e2]=dnn_bp(x,y,w1,b1,maxepoch)
+function [w1,w2,b1,b2,e2]=dnn_bp(x,w1,w2,b1,b2,maxepoch)
 % vishid=w1;
 % hidvis=w2;
 % hidbiases=b1;
@@ -30,6 +30,13 @@ for i1=1:length(w1)
     Dim=[Dim size(weight,1)-1];
     Dw=[Dw zeros(size(weight))];
 end
+for i1=length(w1):-1:1
+    weight=[w2{i1};b2{i1}];
+    Weight=[Weight weight];
+    VV=[VV weight(:)'];
+    Dim=[Dim size(weight,1)-1];
+    Dw=[Dw zeros(size(weight))];
+end
 Dim=[Dim Dim(1)];
 %% start
 for epoch = 1:maxepoch
@@ -42,13 +49,12 @@ for epoch = 1:maxepoch
     err=0;
     for batch = 1:numbatches
         data = batchdata(:,:,batch);
-        label=y(:,:,batch);
         wprobs=[data ones(numcases,1)];
         for i1=1:length(Weight)
             wprobs = [1./(1 + exp(-wprobs*Weight{i1})) ones(numcases,1)];
         end
         data_out=wprobs(:,1:end-1);
-        err= err+sum(sum((label-data_out).^2))/numcases/numdims;
+        err= err+sum(sum((data-data_out).^2))/numcases/numdims;
     end
 	e2(epoch)=err/numbatches*1000;
     fprintf(1,'BP: epoch %4i error %.4f\n',epoch,e2(epoch));
@@ -66,10 +72,8 @@ for epoch = 1:maxepoch
 %%%%%%%%%%% COMBINE 10 MINIBATCHES INTO 1 LARGER MINIBATCH %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         tt=tt+1; 
         data=[];
-        label=[];
         for kk=1:10
             data=[data;batchdata(:,:,(tt-1)*10+kk)]; 
-            label=[label;y(:,:,(tt-1)*10+kk)]; 
         end
         numcases2=numcases*10;
 
@@ -82,12 +86,12 @@ for epoch = 1:maxepoch
         end
         Xout=a{length(Weight)+1};
         data_out=Xout(:,1:end-1);
-        err= err+sum(sum((label-data_out).^2))/numcases2/numdims; 
+        err= err+sum(sum((data-data_out).^2))/numcases2/numdims; 
         
        %% ·´Ïò´«²¥
         delta=cell(0);
         hid=a{length(Weight)+1}(:,1:end-1);
-        delta{length(Weight)}=-(label-hid).*hid.*(1-hid);
+        delta{length(Weight)}=-(data-hid).*hid.*(1-hid);
         for i1=length(Weight):-1:2
             hid=a{i1}(:,1:end-1);
             weight=Weight{i1}(1:end-1,:);
@@ -107,9 +111,14 @@ for epoch = 1:maxepoch
 %     save dnn_error train_err;
 
 end
-for i1=1:length(Weight)
+for i1=1:length(Weight)/2
     weight=Weight{i1};
     w1{i1}=weight(1:end-1,:);
     b1{i1}=weight(end,:);
+end
+for i1=1:length(Weight)/2
+    weight=Weight{length(Weight)+1-i1};
+    w2{i1}=weight(1:end-1,:);
+    b2{i1}=weight(end,:);
 end
 end

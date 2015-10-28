@@ -1,4 +1,4 @@
-function [batchposhidprobs,vishid,hidbiases,visbiases]=rbm_model(batchdata,numhid)
+                                                                                                                                                                                                                               hfunction [batchposhidprobs,vishid,hidbiases,visbiases]=rbm_model(batchdata,numhid)
 epsilonw      = 0.1;   % Learning rate for weights 
 epsilonvb     = 0.1;   % Learning rate for biases of visible units 
 epsilonhb     = 0.1;   % Learning rate for biases of hidden units 

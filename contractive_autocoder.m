@@ -7,7 +7,7 @@ finalmomentum    = 0.9;
 
 % row=0.5;%¼¤»î¶È
 % belta=0.002;
-lambda=0.0001;
+lambda=0.00001;
 
 [numcases, numdims, numbatches]=size(batchdata);
 % Initializing symmetric weights and biases. 

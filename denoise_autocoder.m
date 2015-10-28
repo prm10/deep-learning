@@ -32,6 +32,11 @@ for epoch = 1:maxepoch,
     else
         momentum=initialmomentum;
     end;
+    if mod(epoch,10)==1
+        [~,median_out]=autocoder_reconstruction(batchdata(1:7,:,1),w1,b1,b2);
+        plot(median_out(:,1),median_out(:,2),'*');
+        drawnow;
+    end
     for batch = 1:numbatches,
 %% Ç°Ïò´«²¥
         data = batchdata(:,:,batch);
