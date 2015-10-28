@@ -1,4 +1,4 @@
-function [w1,b1,b2,e1,e2]=dnn_train(x0,y0,layer,circle_times)
+function [w1,b1,b2,w11,b11,e1,e2]=dnn_train(x0,y0,layer,circle_times)
 w1=cell(0);
 b1=cell(0);
 e1=cell(0);
@@ -10,8 +10,8 @@ for n=layer
     i1=i1+1;
 end
 [numcases, numdims, numbatches]=size(y0);
-w1=[w1 0.1*randn(size(w1{end},2),numdims);];
-b1=[b1 zeros(1,numdims)];
-[w1,b1,e2]=dnn_bp(x0,y0,w1,b1,20);
+w11=[w1 0.1*randn(size(w1{end},2),numdims);];
+b11=[b1 zeros(1,numdims)];
+[w11,b11,e2]=dnn_bp(x0,y0,w11,b11,20);
 toc;
 
