@@ -12,6 +12,6 @@ end
 [numcases, numdims, numbatches]=size(y0);
 w1=[w1 0.1*randn(size(w1{end},2),numdims);];
 b1=[b1 zeros(1,numdims)];
-[w1,b1,e2]=dnn_bp(x0,y0,w1,b1,ceil(min(circle_times)));
+[w1,b1,e2]=dnn_bp(x0,y0,w1,b1,20);
 toc;
 

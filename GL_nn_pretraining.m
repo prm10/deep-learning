@@ -11,7 +11,7 @@ x=generate_batches(data2,100);
 y=generate_batches(label2,100);
 clear data2 date2 label2 kind
 layer=[100 20];
-circle_times=[10 10];
+circle_times=[100 100];
 [w1,b1]=dnn_train(x,y,layer,circle_times);
 save(strcat('para',num2str(layer),'.mat'),'w1','b1','b2');
 % 查看验证集和测试的重构效果

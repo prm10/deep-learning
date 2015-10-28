@@ -56,7 +56,7 @@ for epoch = 1:maxepoch
     if epoch~=1
         if err0<err
             epsilon=epsilon/2;
-            fprintf(1,'BP: change learning rate to %.5f',epsilon);
+            fprintf(1,'BP: change learning rate to %.5f \n',epsilon);
         end
     end
     err0=err;
