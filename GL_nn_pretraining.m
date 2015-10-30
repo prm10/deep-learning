@@ -13,10 +13,16 @@ clear data2 date2 label2 kind
 layer=[100 50 20];
 circle_times=[200 200 300];
 [w1,b1,b2,w11,b11]=dnn_train(x,y,layer,circle_times);
-save(strcat('para',num2str(layer),'.mat'),'w1','b1','b2','w11','b11');
+str1='para';
+for i1=1:length(layer)
+    str1=[str1,'_',num2str(layer(i1))];
+end
+str1=[str1,'.mat'];
+save(str1,'w1','b1','b2','w11','b11');
 % 查看验证集和测试的重构效果
 clear x y;
 load('K:\GL_data\3\data2_labeled');
+load(str1);
 [dataout]=dnn_test(data2,w11,b11);
 n=1:length(dataout);
 figure;

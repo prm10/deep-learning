@@ -2,7 +2,7 @@ function []=feature_extraction(x,L,n)
 % 数据x:n*d; 最近一段时间L
 % 最近一段时间内的均值、标准差
 % 最近0~L、2L、4L、……时间内的原始数据、导数、二阶导数的均值、标准差
-[numcases,numdims]=size(x);
+[numcases]=size(x,1);
 if L*2^(n-1)>(numcases-1)+2
     disp('数据长度不够');
     return;

@@ -1,4 +1,4 @@
-%% 生成带标签的数据集
+%% No3. 生成带标签的数据集
 clc;clear;close all;
 n=8;
 l=zeros(1,n);
