@@ -1,27 +1,24 @@
-function [hout,w1,b1,b2,rec_error]=contractive_autocoder(batchdata,numhid,maxepoch)
+function [hout,w1,b1,b2,rec_error]=contractive_autocoder(x,numhid,args)
 epsilonw      = 0.01;   % Learning rate for weights 
 epsilonvb     = 0.01;   % Learning rate for biases of visible units 
 epsilonhb     = 0.01;   % Learning rate for biases of hidden units    
 initialmomentum  = 0.5;
 finalmomentum    = 0.9;
-
-% row=0.5;%激活度
-% belta=0.002;
 lambda=0.00001;
-
-[numcases, numdims, numbatches]=size(batchdata);
+maxepoch=args.maxepoch;
+numcases=args.numcases;
+numdims=size(x,2);
+[batchdata]=generate_batches(x,numcases);
+[~, ~, numbatches]=size(batchdata);
 % Initializing symmetric weights and biases. 
 w1 = 0.1*randn(numdims, numhid);
 w2 = w1';%0.1*randn(numhid, numdims);
 b1  = zeros(1,numhid);
 b2  = zeros(1,numdims);
 
-% Dw1  = zeros(numdims,numhid);
-% Dw2  = zeros(numhid,numdims);
 Dw  = zeros(numdims,numhid);
 Db1 = zeros(1,numhid);
 Db2 = zeros(1,numdims);
-hout=zeros(numcases,numhid,numbatches);
 rec_error=zeros(maxepoch,1);
 for epoch = 1:maxepoch,
     errsum=0;
@@ -31,6 +28,8 @@ for epoch = 1:maxepoch,
     else
         momentum=initialmomentum;
     end;
+    [batchdata]=generate_batches(x,numcases);
+    [~, ~, numbatches]=size(batchdata);
     for batch = 1:numbatches,
 %% 前向传播
         a1 = batchdata(:,:,batch);
@@ -39,7 +38,6 @@ for epoch = 1:maxepoch,
         z2=a2*w2 + repmat(b2,numcases,1);
         a3 = 1./(1 + exp(-z2));
         
-        hout(:,:,batch)=a2;
         active_rate=mean(a2);
         ar=ar+mean(active_rate);
         
@@ -60,8 +58,6 @@ for epoch = 1:maxepoch,
         errsum = err + errsum;
 
 %%%%%%%%% UPDATE WEIGHTS AND BIASES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%         Dw1 = momentum*Dw1 - epsilonw*dw1;
-%         Dw2 = momentum*Dw2 - epsilonw*dw2;
         Dw=momentum*Dw - epsilonw*(dw1+dw2')/2;
         Db1 = momentum*Db1 - epsilonhb*db1;
         Db2 = momentum*Db2 - epsilonvb*db2;
@@ -76,5 +72,7 @@ for epoch = 1:maxepoch,
     errsum=errsum/numcases/numdims/numbatches;
     rec_error(epoch)=errsum*1e3;
     fprintf(1, 'epoch %4i error %.4f active rate %3.3f \n', epoch, rec_error(epoch), ar/numbatches); 
-end;
+end
+z1=x*w1 + repmat(b1,size(x,1),1);
+hout = 1./(1 + exp(-z1));
 end

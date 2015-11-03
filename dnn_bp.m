@@ -1,22 +1,23 @@
-function [w1,b1,e2]=dnn_bp(x,y,w1,b1,maxepoch)
+function [w1,b1,e2]=dnn_bp(x,y,w1,b1,args)
 % vishid=w1;
 % hidvis=w2;
 % hidbiases=b1;
 % visbiases=b2;
 %% initial
 % maxepoch=10;
-batchdata=x;
+% batchdata=x;
 % testbatchdata=y;
 
-epsilon=0.01;
+epsilon=0.1;
 initialmomentum  = 0.5;
 finalmomentum    = 0.9;
-% row=0.5;%激活度
-belta=0.002;
-lambda=0.00005;
 
-[numcases numdims numbatches]=size(batchdata);
-% test_err=[];
+lambda=0.00001;
+numdims1=size(x,2);
+numdims2=size(y,2);
+maxepoch=args.maxepoch;
+outputway=args.outputway;
+numcases=args.numcases;
 e2=[];
 %% data to SGD
 VV=[];
@@ -31,6 +32,7 @@ for i1=1:length(w1)
     Dw=[Dw zeros(size(weight))];
 end
 Dim=[Dim Dim(1)];
+lw=length(Weight);
 %% start
 for epoch = 1:maxepoch
     if epoch>5,
@@ -39,77 +41,79 @@ for epoch = 1:maxepoch
         momentum=initialmomentum;
     end;
 %%%%%%%%%%%%%%%%%%%% COMPUTE TRAINING RECONSTRUCTION ERROR %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    [batchdata]=generate_batches([x,y],numcases);
+    [~,~,numbatches]=size(batchdata);
     err=0;
     for batch = 1:numbatches
-        data = batchdata(:,:,batch);
-        label=y(:,:,batch);
-        wprobs=[data ones(numcases,1)];
-        for i1=1:length(Weight)
-            wprobs = [1./(1 + exp(-wprobs*Weight{i1})) ones(numcases,1)];
-        end
-        data_out=wprobs(:,1:end-1);
-        err= err+sum(sum((label-data_out).^2))/numcases/numdims;
+        data = batchdata(:,1:numdims1,batch);
+        label=batchdata(:,numdims1+1:numdims1+numdims2,batch);
+        [~,~,err1]=dnn_ff(data,label,Weight,outputway);
+        err= err+err1;
     end
-	e2(epoch)=err/numbatches*1000;
+    err=err/numbatches*1000;
+	e2(epoch)=err;
     fprintf(1,'BP: epoch %4i error %.4f\n',epoch,e2(epoch));
     
-    if epoch~=1
-        if err0<err
-            epsilon=epsilon/2;
-            fprintf(1,'BP: change learning rate to %.5f \n',epsilon);
-        end
-    end
-    err0=err;
+%     if epoch~=1
+%         if e2(end-1)<err % 可以优化学习率的选取
+%             epsilon=epsilon/2;
+%             fprintf(1,'BP: change learning rate to %.5f \n',epsilon);
+%         end
+%     end
 %%%%%%%%%%%%%% END OF COMPUTING TRAINING RECONSTRUCTION ERROR %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    tt=0;
-	for batch = 1:numbatches/10
-%%%%%%%%%%% COMBINE 10 MINIBATCHES INTO 1 LARGER MINIBATCH %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        tt=tt+1; 
-        data=[];
-        label=[];
-        for kk=1:10
-            data=[data;batchdata(:,:,(tt-1)*10+kk)]; 
-            label=[label;y(:,:,(tt-1)*10+kk)]; 
-        end
-        numcases2=numcases*10;
-
-%%%%%%%%%%%%%%% PERFORM CONJUGATE GRADIENT WITH 3 LINESEARCHES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        a=cell(0);
-        a{1}=[data ones(numcases2,1)];
-        for i1=1:length(Weight)
-            a{i1+1} = 1./(1 + exp(-a{i1}*Weight{i1}));
-            a{i1+1} = [a{i1+1} ones(numcases2,1)];
-        end
-        Xout=a{length(Weight)+1};
-        data_out=Xout(:,1:end-1);
-        err= err+sum(sum((label-data_out).^2))/numcases2/numdims; 
+	for batch = 1:numbatches
+        data = batchdata(:,1:numdims1,batch);
+        label=batchdata(:,numdims1+1:numdims1+numdims2,batch);
+        % 前向传播
+        [a,data_out,~]=dnn_ff(data,label,Weight,outputway);
         
-       %% 反向传播
+        % 反向传播
         delta=cell(0);
-        hid=a{length(Weight)+1}(:,1:end-1);
-        delta{length(Weight)}=-(label-hid).*hid.*(1-hid);
+        hid=data_out;
+        switch(outputway)
+            case 'softmax'
+                delta{length(Weight)}=-(label-hid);
+            otherwise
+                delta{length(Weight)}=-(label-hid).*hid.*(1-hid);
+        end
         for i1=length(Weight):-1:2
             hid=a{i1}(:,1:end-1);
             weight=Weight{i1}(1:end-1,:);
             delta{i1-1}=(delta{i1}*weight').*hid.*(1-hid);
         end
         for i1=1:length(Weight)
-            dw=a{i1}(:,1:end-1)'*delta{i1}/numcases2+lambda*Weight{i1}(1:end-1,:);
+            dw=a{i1}(:,1:end-1)'*delta{i1}/numcases+lambda*Weight{i1}(1:end-1,:);
             db=mean(delta{i1});
             Dw{i1}=momentum*Dw{i1} - epsilon*[dw;db];
             Weight{i1} = Weight{i1} + Dw{i1};
         end      
-%%%%%%%%%%%%%%% END OF CONJUGATE GRADIENT WITH 3 LINESEARCHES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 	end
-
-%     save dnn_weights Weight;
-%     save dnn_error train_err;
-
 end
 for i1=1:length(Weight)
     weight=Weight{i1};
     w1{i1}=weight(1:end-1,:);
     b1{i1}=weight(end,:);
 end
+end
+
+function [a,data_out,err]=dnn_ff(data,label,Weight,outputway)
+        % 前向传播
+        [numcases,numdims]=size(data);
+        lw=length(Weight);
+        a=cell(0);
+        a{1}=[data ones(numcases,1)];
+        for i1=1:lw-1
+            a{i1+1} = 1./(1 + exp(-a{i1}*Weight{i1}));
+            a{i1+1} = [a{i1+1} ones(numcases,1)];
+        end
+        switch(outputway)
+            case 'softmax'
+                M=a{lw}*Weight{lw};
+                M=exp(M-max(M,[],2)*ones(1,size(M,2)));
+                data_out =M./(sum(M,2)*ones(1,size(M,2)));
+                err=-sum(sum(label.* log(data_out)))/numcases;
+            otherwise
+                data_out = 1./(1 + exp(-a{lw}*Weight{lw}));
+                err=-sum(sum((label-data_out).^2))/numcases/numdims; 
+        end
 end

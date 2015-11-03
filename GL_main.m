@@ -5,7 +5,7 @@ name_str={ '富氧率','透气性指数','CO','H2','CO2','标准风速','富氧流量','冷风流量
 % [date,data]=get_data_from_sql_server('[GL1].[dbo].[ZCS1]',date_str_begin,date_str_end);
 % save data.mat date data;
 
-% datestr(date(45506),'yyyy-mm-dd HH:MM:SS')
+% datestr(date0(45506),'yyyy-mm-dd HH:MM:SS')
 
 load data_正常_2012-10-01.mat;
 

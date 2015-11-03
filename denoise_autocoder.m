@@ -1,15 +1,16 @@
-function [hout,w1,b1,b2,rec_error]=denoise_autocoder(batchdata,numhid,maxepoch)
+function [hout,w1,b1,b2,rec_error]=denoise_autocoder(x,numhid,args)
 epsilonw      = 0.01;   % Learning rate for weights 
 epsilonvb     = 0.01;   % Learning rate for biases of visible units 
 epsilonhb     = 0.01;   % Learning rate for biases of hidden units    
 initialmomentum  = 0.5;
 finalmomentum    = 0.9;
 
-% row=0.5;%激活度
-% belta=0.002;
 lambda=0.0000;
-
-[numcases, numdims, numbatches]=size(batchdata);
+maxepoch=args.maxepoch;
+numcases=args.numcases;
+numdims=size(x,2);
+[batchdata]=generate_batches(x,numcases);
+[~, ~, numbatches]=size(batchdata);
 % Initializing symmetric weights and biases. 
 w1 = 0.1*randn(numdims, numhid);
 w2 = w1';%0.1*randn(numhid, numdims);
@@ -32,11 +33,13 @@ for epoch = 1:maxepoch,
     else
         momentum=initialmomentum;
     end;
-    if mod(epoch,10)==1
-        [~,median_out]=autocoder_reconstruction(batchdata(1:7,:,1),w1,b1,b2);
-        plot(median_out(:,1),median_out(:,2),'*');
-        drawnow;
-    end
+    [batchdata]=generate_batches(x,100);
+    [numcases, numdims, numbatches]=size(batchdata);
+%     if mod(epoch,10)==1
+%         [~,median_out]=autocoder_reconstruction(batchdata(1:7,:,1),w1,b1,b2);
+%         plot(median_out(:,1),median_out(:,2),'*');
+%         drawnow;
+%     end
     for batch = 1:numbatches,
 %% 前向传播
         data = batchdata(:,:,batch);
