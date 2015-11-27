@@ -4,12 +4,11 @@ name_str={ '富氧率','透气性指数','CO','H2','CO2','标准风速','富氧流量','冷风流量
 % name_str=name_str(chos);
 % load data_正常_2012-10-01.mat;
 %% 导入数据
-load('K:\GL_data\3\data2_labeled');
+load('K:\GL_data\3\data_normalized.mat');
 %% autocoder
 %可以分别试试用原始信号和用pca处理后信号的效果
-x=generate_batches(data2,100);
+x=data1;
 y=generate_batches(label2,100);
-clear data2 date2 label2 kind
 layer=[100 50 20];
 circle_times=[200 200 300];
 [w1,b1,b2,w11,b11]=dnn_train(x,y,layer,circle_times);

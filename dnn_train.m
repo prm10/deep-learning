@@ -10,7 +10,7 @@ maxepoch=args.maxepoch;
 outputway=args.outputway;
 numcases=args.numcases;
 for n=layer
-    [x,w1{i1},b1{i1},b2{i1},e1{i1}]=contractive_autocoder(x,n,args);
+    [x,w1{i1},b1{i1},b2{i1},e1{i1}]=denoise_autocoder(x,n,args);
     i1=i1+1;
 end
 [numcases, numdims, numbatches]=size(y0);
